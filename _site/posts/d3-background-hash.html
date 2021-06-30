@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>mapsam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta property="og:title" content="D3 Background Hash Patterns" />
+  <meta property="og:url" content="http://mapsam.com/posts/d3-background-hash" />
+  <meta property="og:description" content="D3 is one of my favorite mapping tools, largely because it makes me still feel like a cartographer in a land where markers and map tiles reign supreme (though you can find beautiful cartography in map tiles as well!). It reminds me of creating static maps in Illustrator and having control over the exact styles visible to the viewer. One important style to work with in any cartographic product is the concept of styling no data - or, the absense of data from the map, which can be just as important as the data itself (or themselves).
+" />
+
+  <!-- thumbs up dude! -->
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="/images/favicon/apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/favicon/apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/favicon/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/favicon/apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="/images/favicon/apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/images/favicon/apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-16x16.png" sizes="16x16" />
+<meta name="application-name" content="Mapsam"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="/images/favicon/mstile-144x144.png" />
+<!-- thumbs down -->
+
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <link rel="stylesheet" href="/css/mapsam.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  
+  
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52837030-1', 'auto');
+    ga('require', 'displayfeatures');
+    ga('send', 'pageview');
+  </script>
+
+</head>
+<body>
+
+<nav class="nav cf">
+	<a href="/"><img src="/images/shrug.png"></a>
+</nav>
+
+
+<h1 class="title">D3 Background Hash Patterns</h1>
+<p class="date">November 21, 2014</p>
+
+<p>D3 is one of my favorite mapping tools, largely because it makes me still feel like a cartographer in a land where markers and map tiles reign supreme (though you can find beautiful cartography in map tiles as well!). It reminds me of creating static maps in Illustrator and having control over the exact styles visible to the viewer. One important style to work with in any cartographic product is the concept of styling <strong>no data</strong> - or, the absense of data from the map, which can be just as important as the data itself (<em>or themselves</em>).</p>
+
+<p>A particular way to showcase <em>no data</em> is using a grayscale color or a <strong>pattern</strong> that is completely separate from the styles used in the presense of data. In D3 or, rather, SVG, this can be a troublesome task; designing patterns for elements of varying shapes and sizes.</p>
+
+<p><img src="/images/posts/20141120-nodata.png" alt="Example of No Data hashing" /></p>
+
+<h2 id="enter-defs-and-pattern">Enter <code class="language-plaintext highlighter-rouge">defs</code> and <code class="language-plaintext highlighter-rouge">pattern</code></h2>
+
+<p>SVG allows for some really interesting linking between styles and elements. Since the language is XML-based, we can reference IDs of defined styles to use in our SVG elements.</p>
+
+<p>In D3, we can create these re-usable patterns with the standard <code class="language-plaintext highlighter-rouge">.append()</code> functions and your <code class="language-plaintext highlighter-rouge">svg</code> object you’ll be working with. <em>(big shoutout to Lars Katthoff on <a href="http://stackoverflow.com/questions/17568858/simple-hash-pattern-svg-in-d3js">Stackoverflow</a> for sharing this technique)</em></p>
+
+<p><strong>Create the pattern style</strong></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">defs</span> <span class="o">=</span> <span class="nx">svg</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="dl">'</span><span class="s1">defs</span><span class="dl">'</span><span class="p">);</span> <span class="c1">// svg is the SVG element you are working with</span>
+<span class="kd">var</span> <span class="nx">dashWidth</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// change this to define the distance between hashes</span>
+<span class="kd">var</span> <span class="nx">g</span> <span class="o">=</span> <span class="nx">defs</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="dl">"</span><span class="s2">pattern</span><span class="dl">"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="dl">'</span><span class="s1">id</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">hash</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="dl">'</span><span class="s1">patternUnits</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">userSpaceOnUse</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="dl">'</span><span class="s1">width</span><span class="dl">'</span><span class="p">,</span> <span class="nx">dashWidth</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="dl">'</span><span class="s1">height</span><span class="dl">'</span><span class="p">,</span> <span class="nx">dashWidth</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="dl">"</span><span class="s2">x</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="dl">"</span><span class="s2">y</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="dl">"</span><span class="s2">g</span><span class="dl">"</span><span class="p">).</span><span class="nx">style</span><span class="p">(</span><span class="dl">"</span><span class="s2">fill</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">none</span><span class="dl">"</span><span class="p">).</span><span class="nx">style</span><span class="p">(</span><span class="dl">"</span><span class="s2">stroke</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">#e5e5e5</span><span class="dl">"</span><span class="p">).</span><span class="nx">style</span><span class="p">(</span><span class="dl">"</span><span class="s2">stroke-width</span><span class="dl">"</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
+<span class="nx">g</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="dl">"</span><span class="s2">path</span><span class="dl">"</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="dl">"</span><span class="s2">d</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">M0,0 l</span><span class="dl">"</span><span class="o">+</span><span class="nx">dashWidth</span><span class="o">+</span><span class="dl">"</span><span class="s2">,</span><span class="dl">"</span><span class="o">+</span><span class="nx">dashWidth</span><span class="p">);</span>
+<span class="nx">g</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="dl">"</span><span class="s2">path</span><span class="dl">"</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="dl">"</span><span class="s2">d</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">M</span><span class="dl">"</span><span class="o">+</span><span class="nx">dashWidth</span><span class="o">+</span><span class="dl">"</span><span class="s2">,0 l-</span><span class="dl">"</span><span class="o">+</span><span class="nx">dashWidth</span><span class="o">+</span><span class="dl">"</span><span class="s2">,</span><span class="dl">"</span><span class="o">+</span><span class="nx">dashWidth</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>The above essentially appends the following to your SVG element for usage as a fill style referenced by <code class="language-plaintext highlighter-rouge">#hash</code>.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;defs&gt;</span>
+  <span class="nt">&lt;pattern</span> <span class="na">id=</span><span class="s">"hash"</span> <span class="na">patternUnits=</span><span class="s">"userSpaceOnUse"</span> <span class="na">width=</span><span class="s">"5"</span> <span class="na">height=</span><span class="s">"5"</span> <span class="na">x=</span><span class="s">"0"</span> <span class="na">y=</span><span class="s">"0"</span><span class="nt">&gt;&lt;g</span> <span class="na">style=</span><span class="s">"fill: none; stroke: rgb(229, 229, 229); stroke-width: 0.5px;"</span><span class="nt">&gt;&lt;path</span> <span class="na">d=</span><span class="s">"M0,0 l5,5"</span><span class="nt">&gt;&lt;/path&gt;&lt;path</span> <span class="na">d=</span><span class="s">"M5,0 l-5,5"</span><span class="nt">&gt;&lt;/path&gt;&lt;/g&gt;&lt;/pattern&gt;</span>
+<span class="nt">&lt;/defs&gt;</span>
+</code></pre></div></div>
+
+<p><strong>Assign pattern to your <code class="language-plaintext highlighter-rouge">path</code> elements</strong></p>
+
+<p>In order to assign the proper pattern, you can set <code class="language-plaintext highlighter-rouge">fill:url(#hash);</code> to your elements, which should properly mask and take on the style.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">svg</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="dl">"</span><span class="s2">.elem</span><span class="dl">"</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">data</span><span class="p">(...)</span>  
+  <span class="p">.</span><span class="nx">enter</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="dl">"</span><span class="s2">path</span><span class="dl">"</span><span class="p">)</span> 
+  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="dl">"</span><span class="s2">class</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">elem</span><span class="dl">"</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="dl">"</span><span class="s2">style</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">fill:url(#hash);</span><span class="dl">"</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="dl">"</span><span class="s2">d</span><span class="dl">"</span><span class="p">,</span> <span class="nx">path</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>And voila! You will see some sweet hashing taking effect. One cool thing with SVG patterns that you can see in the example below is that the pattern will run uniformly between elements. If you hover on Tanzania, you’ll notice some adminstrative borders each with their own <code class="language-plaintext highlighter-rouge">#hash</code> style, yet the pattern is fluid between them.</p>
+
+<iframe src="http://broadstreetmaps.giscollective.org/d3hash-example" width="600" height="400" frameborder="0" style="overflow:hidden;"></iframe>
+
+<p><em>note: this takes a while to load since it’s through an <code class="language-plaintext highlighter-rouge">iframe</code>, sorry! You can view the <a href="http://broadstreetmaps.giscollective.org/d3hash-example">raw example here</a></em></p>
+
+<p>To extend it further, you can define multiple patterns based on your data and essentially set them to create a density style map, the difference being the space between your hash lines.</p>
+
+<iframe src="http://broadstreetmaps.giscollective.org/d3hash-example2" width="600" height="400" frameborder="0" style="overflow:hidden;"></iframe>
+
+<p>D3 is fun!</p>
+
+
+<a class="mono" href="/posts">&lBarr; back to posts</a>
+
+
+
+</body>
+</html>
+

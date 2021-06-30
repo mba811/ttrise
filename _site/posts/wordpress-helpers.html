@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>mapsam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta property="og:title" content="WordPress Helpers" />
+  <meta property="og:url" content="http://mapsam.com/posts/wordpress-helpers" />
+  <meta property="og:description" content="The following are scripts and settings that I typically use when working in WordPress. They are here for me to reuse, but please feel free to use yourself!
+" />
+
+  <!-- thumbs up dude! -->
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="/images/favicon/apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/favicon/apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/favicon/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/favicon/apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="/images/favicon/apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/images/favicon/apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-16x16.png" sizes="16x16" />
+<meta name="application-name" content="Mapsam"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="/images/favicon/mstile-144x144.png" />
+<!-- thumbs down -->
+
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <link rel="stylesheet" href="/css/mapsam.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  
+  
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52837030-1', 'auto');
+    ga('require', 'displayfeatures');
+    ga('send', 'pageview');
+  </script>
+
+</head>
+<body>
+
+<nav class="nav cf">
+	<a href="/"><img src="/images/shrug.png"></a>
+</nav>
+
+
+<h1 class="title">WordPress Helpers</h1>
+<p class="date">June 05, 2014</p>
+
+<p>The following are scripts and settings that I typically use when working in WordPress. They are here for me to reuse, but please feel free to use yourself!</p>
+
+<h3 id="category-permalinks">Category Permalinks</h3>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html">http://example.com/%category%/%postname%/</code></pre></figure>
+
+<h3 id="featured-image-url">Featured Image URL</h3>
+
+<p>Get it</p>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="nv">$img</span> <span class="o">=</span> <span class="nf">wp_get_attachment_image_src</span><span class="p">(</span> <span class="nf">get_post_thumbnail_id</span><span class="p">(</span><span class="nv">$post</span><span class="o">-&gt;</span><span class="no">ID</span><span class="p">),</span> <span class="s1">'single-page-thumbnail'</span><span class="p">);</span></code></pre></figure>
+
+<p>Use it <strong>php</strong></p>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?php</span>
+<span class="k">echo</span> <span class="s1">'&lt;div class="post-featured-image" style="background-image:url('</span><span class="mf">.</span><span class="nv">$img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="mf">.</span><span class="s1">');filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='</span><span class="mf">.</span><span class="nv">$img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="mf">.</span><span class="s1">', sizingMethod="scale");-ms-filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='</span><span class="mf">.</span><span class="nv">$img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="mf">.</span><span class="s1">', sizingMethod="scale");"&gt;&lt;/div&gt;'</span>
+<span class="cp">?&gt;</span></code></pre></figure>
+
+<p>Use it <strong>HTML</strong></p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"post-featured-image"</span> <span class="na">style=</span><span class="s">"background-image:url(&lt;?php echo $img[0] ?&gt;);filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=&lt;?php echo $img[0] ?&gt;, sizingMethod="</span><span class="na">scale</span><span class="err">");</span><span class="na">-ms-filter:</span> <span class="na">progid:DXImageTransform.Microsoft.AlphaImageLoader(src=</span><span class="s">&lt;?php</span> <span class="na">echo</span> <span class="err">$</span><span class="na">img</span><span class="err">[0]</span> <span class="err">?</span><span class="nt">&gt;</span>, sizingMethod="scale");"&gt;<span class="nt">&lt;/div&gt;</span></code></pre></figure>
+
+<p>waka</p>
+
+
+<a class="mono" href="/posts">&lBarr; back to posts</a>
+
+
+
+</body>
+</html>
+

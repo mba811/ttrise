@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>mapsam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta property="og:title" content="Making maps in 2016" />
+  <meta property="og:url" content="http://mapsam.com/posts/making-maps" />
+  <meta property="og:description" content="
+
+" />
+
+  <!-- thumbs up dude! -->
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="/images/favicon/apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/favicon/apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/favicon/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/favicon/apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="/images/favicon/apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/images/favicon/apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-16x16.png" sizes="16x16" />
+<meta name="application-name" content="Mapsam"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="/images/favicon/mstile-144x144.png" />
+<!-- thumbs down -->
+
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <link rel="stylesheet" href="/css/mapsam.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  
+  
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52837030-1', 'auto');
+    ga('require', 'displayfeatures');
+    ga('send', 'pageview');
+  </script>
+
+</head>
+<body>
+
+<nav class="nav cf">
+	<a href="/"><img src="/images/shrug.png"></a>
+</nav>
+
+
+<h1 class="title">Making maps in 2016</h1>
+<p class="date">December 16, 2016</p>
+
+<style>
+aside {
+  text-align: left;
+}
+aside img {
+  width: 100px;
+  margin: 0;
+}
+</style>
+
+<p>I’ve been working at Mapbox for almost a year now and it feels like a good time to write a 50,000 foot view of how maps for the web are generally made. I’m greatly inspired by the many educational posts geared towards constructing web maps, and really like the anatomy style posts. One thing I’ve always missed, though, is how a map <em>system</em> is built. How does one go from source data to tiles to storage to mapping library to request to rendering on a screen? Here’s my attept to illustrate this system.</p>
+
+<p><img src="/images/posts/map-company.png" alt="map system" /></p>
+
+<p>Above is a series of components representing a full scale mapping system. The rest of this post will go through each of these components and talk about real-world examples of each.</p>
+
+<aside><img src="/images/posts/system-data.png" /></aside>
+
+<h3 id="data-minnesota">Data (Minnesota)</h3>
+
+<p>The first part of making a map is data. Datasources can be big or small in filesize or extent. The most obvious large-scale data source is Open Street Map (OSM). Mapbox builds its core styles with OSM, which is world-wide and ever changing.</p>
+
+<aside><img src="/images/posts/system-funnel.png" /></aside>
+
+<h3 id="data-processing-funnel">Data processing (funnel)</h3>
+
+<p>In order to make your data ready for mapping, it’s good to prepare it for the tools ahead in the pipeline. In the case of OSM data, the entire planet consists of “nodes”. These nodes, although quite useful for OSM’s cases, aren’t particularly helpful for standard GIS systems that expect geometry like Points, Lines, and Polygons. For large scale data sources, using a database infrastructure like PostGIS is extremely helpful for sanitizing and cleaning data. In the case of OSM, processing can look like this:</p>
+
+<ol>
+  <li>Ingest OSM node data</li>
+  <li>Select only the data you want, i.e. road network information</li>
+  <li>match nodes and IDs to create OGC valid geometries</li>
+  <li>output into a new source, which could also be a PostGIS database</li>
+</ol>
+
+<aside><img src="/images/posts/system-machine.png" /></aside>
+
+<h3 id="tiling-machine-machine--tiles-blue-squares">Tiling machine (machine) &amp; tiles (blue squares)</h3>
+
+<p>The first parts of the mapping system fit into many workflows outside of building web maps. The same can be said about many of the components if you look at them individually. The tiling machine, though, is one made for mapping. Map tiles are squares of the earth that cover the entire extent of a datasource. Each map tile exists at an XY grid coordinate of the planet, as well as a Z coordinate (referred to as “zoom”). I recommend reading Mapbox’s <a href="https://www.mapbox.com/help/how-web-maps-work/">“how do web maps work”</a> guide to learn more about map tiles. A <strong>tiling maching</strong> is something that outputs map tiles by passing in source data and the ZXY information.</p>
+
+<p>Say we have the state of Minnesota and want to make a tile like <a href="https://b.tiles.mapbox.com/v4/mapbox.mapbox-streets-v7/6/15/22.png?access_token=pk.eyJ1IjoibWFwc2FtIiwiYSI6ImNpaWR1MXlxcDAxMTJ1M2tzYWUyeTdpY24ifQ.QG1jCTgj-WYwJa2y1W0wMw">this one</a>, which is of the north eastern point of the state. A tiling machine needs four pieces of information:</p>
+
+<ol>
+  <li>The source data (our Minnesota data source)</li>
+  <li>The <code class="language-plaintext highlighter-rouge">X</code> tile coordinate</li>
+  <li>The <code class="language-plaintext highlighter-rouge">Y</code> tile coordinate</li>
+  <li>The <code class="language-plaintext highlighter-rouge">Z</code> zoom level at which to tile</li>
+</ol>
+
+<p>Pass this information in, and you get a tile out. For the sake of continuity, this post will not go into the difference between image and vector tiles - we are assuming every tile is a vector tile. Check out <a href="https://www.mapbox.com/vector-tiles/">this page</a> to learn more about vector tiles, which have the <code class="language-plaintext highlighter-rouge">.mvt</code> file extension.</p>
+
+<p>A well known tiling machine is <a href="mapnik.org">Mapnik</a>, which is written in C++ but has a widely used <a href="https://github.com/mapnik/node-mapnik">Node.js port</a>.</p>
+
+<aside><img src="/images/posts/system-conductor.png" /></aside>
+
+<h3 id="conductor-cranes">Conductor (cranes)</h3>
+
+<p>Once a tiling machine spits out a tile, the map system needs to know where to put it. Thus the ZXY information must be preserved through this process. I’m going to refer to this component as the “conductor”, which I want to highlight is neither formal or colloquial, just what made sense to me while writing.</p>
+
+<p>The conductor typically wraps itself around the tiling machine and the placement of tiles into storage (discussed below). An example of this type of conductor mechanism is the <a href="https://github.com/mapbox/tilelive">tilelive</a> project, which is an open source project by Mapbox that allows you to stream tiles from source to sink (storage). Systems like tilelive can <a href="https://github.com/mapbox/tilelive-bridge/blob/c945a3fa6f6825b279e05964bd053719ddd23030/package.json#L16">include tiling machines themselves</a>, such as Node Mapnik.</p>
+
+<aside><img src="/images/posts/system-storage.png" /></aside>
+
+<h3 id="storage-box">Storage (box)</h3>
+
+<p>The most common way to store a tile is in a filesystem format where the directories refer to the ZXY values individually. If I was storing maps on my laptop, here’s what that filesystem structure would look like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/Users/mapsam/maps/streets/{z}/{x}/{y}.mvt
+</code></pre></div></div>
+
+<p>The Minnesota tile above would be:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/Users/mapsam/maps/streets/6/15/22.mvt
+</code></pre></div></div>
+
+<p><img src="/images/posts/tile-file-system.png" alt="file system" /></p>
+
+<p>Pretty neat! I can have an entire tileset living on my computer. But that doesn’t allow me to share my map tiles with anyone else. Where can we put these somewhere accessible to anyone? A very common static file storage system is AWS’s <strong>S3</strong> service. The same URI above would look like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s3://mapsam/maps/streets/6/15/22.mvt
+</code></pre></div></div>
+
+<p>AWS allows you to register domains to endpoints in S3, so you could eventually have a URI that looks like this for retrieving tiles:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://api.mapsam.com/maps/streets/6/15/22.mvt
+</code></pre></div></div>
+
+<p>Once tiles are stored and available to others, it’s up to a mapping library to find those tiles and do something with them, such as rendering them on a screen.</p>
+
+<aside><img src="/images/posts/system-cpu.png" /></aside>
+
+<h3 id="mapping-library-computer-arms--screen-to-render-computer">Mapping library (computer arms) &amp; screen to render (computer)</h3>
+
+<p>Generating tiles is just half the battle. Rending vector tiles in a browser requires a mapping library that can pack a punch. One of such libraries is Mapbox GL JS. At its core, Mapbox GL JS is a WebGL rendering library but it also knows how to handle geographic information. This library performs the following operations:</p>
+
+<ul>
+  <li>compute the geographic extent represented by the computer’s screen dimensions, which also requires the library to set an arbitrary <code class="language-plaintext highlighter-rouge">Z</code> value. These values are used to generate a list of tiles that need to be requested.</li>
+  <li>request tiles from a remote service, such as AWS S3 (discussed above)</li>
+  <li>decode vector tiles from their binary format into a readable javascript object</li>
+  <li>match style properties to newly decoded features</li>
+  <li>generate WebGL buffers to apply styles and draw on the screen</li>
+  <li>update itself based on user interactions (updates such as requesting more tiles, rotating and redrawing, updating the styling of geographic information)</li>
+</ul>
+
+<p>The hands of this illustration represent the mapping library grabbing tiles from the storage box. The computer is able to calculate these GL buffers effeciently thanks to modern graphics cards.</p>
+
+<hr />
+
+<p>Overall, a mapping system is built of a lot of moving parts, all of which must elegantly interact with each other but also be modular enough so you can update, edit, and use them elsewhere. It can be fun (but expensive) to set all of this stuff up yourself - but you’ll truly understand how web maps work from source data to rendering tiles on a screen.</p>
+
+
+<a class="mono" href="/posts">&lBarr; back to posts</a>
+
+
+
+</body>
+</html>
+

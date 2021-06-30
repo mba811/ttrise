@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>mapsam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta property="og:title" content="Creating an RSS JSON API - a Google Feed API alternative" />
+  <meta property="og:url" content="http://mapsam.com/posts/rss-json" />
+  <meta property="og:description" content="Last month (December 2016) the Google Feed API was discontinued. The CUGOS website (cugos.org) used the Google Feed API to list out the recent posts in our Google Group, which has a less-than-stellar user interface. The JavaScript console on cugos.org looked like this:
+" />
+
+  <!-- thumbs up dude! -->
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="/images/favicon/apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/favicon/apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/favicon/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/favicon/apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="/images/favicon/apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/images/favicon/apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-16x16.png" sizes="16x16" />
+<meta name="application-name" content="Mapsam"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="/images/favicon/mstile-144x144.png" />
+<!-- thumbs down -->
+
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <link rel="stylesheet" href="/css/mapsam.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  
+  
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52837030-1', 'auto');
+    ga('require', 'displayfeatures');
+    ga('send', 'pageview');
+  </script>
+
+</head>
+<body>
+
+<nav class="nav cf">
+	<a href="/"><img src="/images/shrug.png"></a>
+</nav>
+
+
+<h1 class="title">Creating an RSS JSON API - a Google Feed API alternative</h1>
+<p class="date">January 11, 2017</p>
+
+<p>Last month (December 2016) the Google Feed API was discontinued. The CUGOS website (cugos.org) used the Google Feed API to list out the recent posts in our <a href="https://groups.google.com/forum/#!aboutgroup/cugos">Google Group</a>, which has a less-than-stellar user interface. The JavaScript console on cugos.org looked like this:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/1943001/21829635/284d1f64-d74c-11e6-87cf-65afff6afad1.png" alt="console errors" /></p>
+
+<p>A quick search on the internet and glance at the <a href="https://developers.google.com/feed/">Google Feed API website</a> showed the API had been officially deprecated in December… blast! Not only was it discontinued, no alternative was presented. Bummer.</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/1943001/21829743/daa0dc96-d74c-11e6-9044-16880e9e1235.png" alt="deprecation notice" /></p>
+
+<p>After doing some research, it appeared there wasn’t a common FOSS alternative to the API provided by Google. Research showed a paid service called <a href="https://blog.superfeedr.com/google-feed-api-alternative/">Superfeedr</a>, but this doesn’t fall within the $0 budget for CUGOS, nor the open source mission.</p>
+
+<p>My next thought was to try consuming XML through an Ajax request. I tried setting up the following on the website:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+  <span class="na">url</span><span class="p">:</span> <span class="dl">'</span><span class="s1">https://groups.google.com/forum/feed/cugos/topics/rss.xml?num=15</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">dataType</span><span class="p">:</span> <span class="dl">'</span><span class="s1">xml</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">success</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>The plan was to get an XML response, then convert it to JSON using some sort of XML -&gt; JSON library. Unfortunately, this solution was cut short:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/1943001/21871569/cddd4212-d817-11e6-9325-a49a097184b6.png" alt="cross-origin request error" /></p>
+
+<p>This error means other domains (origins) aren’t granted access to this information via XMLHttpRequests. Google disallows it, and we can’t change that. This means the jQuery, on-the-fly conversion option was a no-go.</p>
+
+<p>The last option was to create our own service that did this for us on a server, rather than in the browser. This means we’d have to spin up an HTTP API that can download the XML at the URL above, convert it to JSON and respond to a GET request made by a browser.</p>
+
+<p>I mocked up a quick example using ExpressJS and Heroku, called <a href="https://github.com/mapsam/rss2js">rss2js</a>. Upon deploying, it worked! After a bit more research, I found this exact solution had already been created at <a href="http://feed2js.org/">feed2js</a>, but unfortunately it has been <a href="http://cogdogblog.com/2013/04/crossroads-for-feed2js/">shut down due to high costs</a> and lack of maintenance interest. I took note, and realized that creating a drop-in replacement for all feeds would lead to more cost than I desired. I quickly changed the approach, forked my repository into the CUGOS GitHub organization, and built the same Heroku server that ONLY returned information from the CUGOS Google Group, which, presumably will receive less traffic.</p>
+
+<p>The source for the CUGOS Feed API is <a href="https://github.com/cugos/cugos-feed-api">on GitHub</a>, and you can see a JSON response at the following URL: <a href="https://cugosfeedapi.herokuapp.com/?count=15">https://cugosfeedapi.herokuapp.com/?count=15</a>.</p>
+
+<p>One down side to using Heroku, if the app hasn’t been used in over an hour, it goes to “sleep”. This results in a general <em>wake up</em> period that can lead to some poor user experience. A downside that doesn’t outweigh the alternative: no feed on the website.</p>
+
+<p>The CUGOS Feed API <a href="https://github.com/cugos/cugos.github.com/pull/177">is live at cugos.org</a>!</p>
+
+
+<a class="mono" href="/posts">&lBarr; back to posts</a>
+
+
+
+</body>
+</html>
+

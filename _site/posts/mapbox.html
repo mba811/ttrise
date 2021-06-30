@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>mapsam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta property="og:title" content="First month at Mapbox" />
+  <meta property="og:url" content="http://mapsam.com/posts/mapbox" />
+  <meta property="og:description" content="Earlier this year I began working at Mapbox! My first month on the job has revolved around ensuring geographic data is reliably created, stored, and shared. A ton of Mapbox’s tools and products rely on Mapnik, which refers to itself as an open source toolkit for developing mapping applications. Mapnik does a lot, but lately we’ve been pushing really hard on ensuring all of the vector tiles it produces are compliant with the Mapbox Vector Tile Specification.
+" />
+
+  <!-- thumbs up dude! -->
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="/images/favicon/apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/favicon/apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/favicon/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/favicon/apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="/images/favicon/apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/images/favicon/apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-16x16.png" sizes="16x16" />
+<meta name="application-name" content="Mapsam"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="/images/favicon/mstile-144x144.png" />
+<!-- thumbs down -->
+
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <link rel="stylesheet" href="/css/mapsam.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <script type="text/javascript" src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.15.0/mapbox-gl.js"></script>
+  <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.15.0/mapbox-gl.css">
+  <link rel="stylesheet" href="/css/mapbox-gl-js-example.css">
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52837030-1', 'auto');
+    ga('require', 'displayfeatures');
+    ga('send', 'pageview');
+  </script>
+
+</head>
+<body>
+
+<nav class="nav cf">
+	<a href="/"><img src="/images/shrug.png"></a>
+</nav>
+
+
+<h1 class="title">First month at Mapbox</h1>
+<p class="date">February 25, 2016</p>
+
+<p>Earlier this year I began working at <a href="https://mapbox.com">Mapbox</a>! My first month on the job has revolved around ensuring geographic data is reliably created, stored, and shared. A ton of Mapbox’s tools and products rely on <a href="http://mapnik.org/">Mapnik</a>, which refers to itself as <em>an open source toolkit for developing mapping applications</em>. Mapnik does <strong>a lot</strong>, but lately we’ve been pushing really hard on ensuring all of the vector tiles it produces are compliant with the <a href="https://github.com/mapbox/vector-tile-spec">Mapbox Vector Tile Specification</a>.</p>
+
+<h2 id="what-are-vector-tiles">What are vector tiles?</h2>
+
+<p>Vector tiles are a way to store geographic data like points, lines, and polygons. Vector tiles need to be rendered by a client or service, like Mapbox GL JS.</p>
+
+<p>Originally, map tiles were stored as images like the one below. These images were rendered from geographic data and a set of styles. In the end, the image has no concept of what data are encoded, unlike vector tiles.</p>
+
+<p><img src="http://b.tile.openstreetmap.org/10/162/353.png" alt="an image tile" />
+<em>An image tile, <code class="language-plaintext highlighter-rouge">http://b.tile.openstreetmap.org/10/162/353.png</code></em></p>
+
+<h2 id="styling-vector-tiles">Styling vector tiles</h2>
+
+<p>Unlike image tiles, vector tiles aren’t styled by default. This allows vector data to be styled quickly and dynamically, allowing for styles to be updated on the fly instead of re-rendering an image tile. To create a vector tile style, you can use Mapbox Studio or roll your own by following the <a href="https://www.mapbox.com/mapbox-gl-style-spec/">Mapbox GL Style Reference</a>.</p>
+
+<p><img src="https://b.tiles.mapbox.com/v4/mapbox.mapbox-streets-v6/10/162/353.png?access_token=pk.eyJ1IjoibWFwc2FtIiwiYSI6ImNpaWR1MXlxcDAxMTJ1M2tzYWUyeTdpY24ifQ.QG1jCTgj-WYwJa2y1W0wMw" alt="vector xray" />
+<em>Here’s the same spot in the world as the image above, but as a vector tile without any styles.</em></p>
+
+<p>Rendering a map with Mapbox GL JS requires two things:</p>
+
+<ol>
+  <li><strong>Tilesource</strong> - the vector tile source you want to render. This can either be custom data uploaded via Mapbox Studio or dynamically added in Mapbox GL JS using the <a href="https://www.mapbox.com/mapbox-gl-js/api/#GeoJSONSource.setData"><code class="language-plaintext highlighter-rouge">.setData</code></a> method.</li>
+  <li><strong>Style</strong> - a style that references properties and geometries in the tilesource and styles them accordingly. This specifies things such as “road line stroke width is 1px” or “all polygons with type ‘park` have green fill”.</li>
+</ol>
+
+<div id="map-example" style="width: 100%; height: 300px;"></div>
+
+<p>A map created by Mapbox GL JS rendering vector tile sources with a particular style, created in Mapbox Studio.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"map"</span><span class="nt">&gt;&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">mapboxgl</span><span class="p">.</span><span class="nx">accessToken</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">access_token</span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">mapboxgl</span><span class="p">.</span><span class="nb">Map</span><span class="p">({</span>
+    <span class="na">container</span><span class="p">:</span> <span class="dl">'</span><span class="s1">map</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">style</span><span class="p">:</span> <span class="dl">'</span><span class="s1">mapbox://styles/mapsam/cikg2spcb001d9sm69lo7bhpz</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">center</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">120.897351</span><span class="p">,</span> <span class="mf">47.613391</span><span class="p">],</span>
+    <span class="na">zoom</span><span class="p">:</span> <span class="mi">6</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Notice how the code above doesn’t have a source? That’s because the style itself has a reference to a source built in. If you download the style (JSON format) you can find the following embeded in it:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"sources"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"mapbox"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mapbox://mapbox.mapbox-streets-v7"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vector"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="how-is-geometry-encoded-into-a-vector-tile">How is geometry encoded into a vector tile?</h2>
+
+<p>The most common way to encode a vector tile is via the <a href="https://github.com/mapbox/vector-tile-spec">Mapbox Vector Tile Specification</a>. This specification tells developers and tile creators how to store geographic data, meta data, and generally how to make vector tiles as relyable as possible for tools that render them.</p>
+
+<p>Vector tiles store representations of geographic data like points, lines, and polygons, but not in a latitude or longitude format. Each vector tile (a square) is a grid with geometries encoded as points along that grid (i.e. <code class="language-plaintext highlighter-rouge">0,0</code> or <code class="language-plaintext highlighter-rouge">2,5</code>). Coordinates are encoded as integers from the top left of the grid using the following commands:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">MoveTo(X,Y)</code> - Pick up your marker and move X,Y coordinates and then put down your marker and make a point</li>
+  <li><code class="language-plaintext highlighter-rouge">LineTo(X,Y)</code> - Draw a line with your marker from your current position to a coordinate X, and Y away.</li>
+  <li><code class="language-plaintext highlighter-rouge">ClosePath()</code> - Draw a line from your current position to the last MoveTo Position.</li>
+</ul>
+
+<p>My first big project at Mapbox was writing up a lot of this information in the Mapbox Vector Tile Specification page on mapbox.com. Check it out at <a href="https://www.mapbox.com/vector-tiles/specification/">www.mapbox.com/vector-tiles/specification/</a>.</p>
+
+
+<a class="mono" href="/posts">&lBarr; back to posts</a>
+
+
+<script type="text/javascript" src="/js/mapbox-gl-js-example.js"></script>
+</body>
+</html>
+

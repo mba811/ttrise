@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>mapsam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta property="og:title" content="Sending emails with Node.js, Gmail, and IFTTT" />
+  <meta property="og:url" content="http://mapsam.com/posts/node-email-gmail-ifttt" />
+  <meta property="og:description" content="I recently had to set up an email confirmation system for the Atlas of Design in preparation for the next call for participation. The submissions platform is written in Node.js using Express and uses AWS for the data storage and map uploads. The last bit of the puzzle was just a simple email to send folks after they submitted their map. This proved a bit harder than anticipated.
+" />
+
+  <!-- thumbs up dude! -->
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="/images/favicon/apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/favicon/apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/favicon/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/favicon/apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="/images/favicon/apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/images/favicon/apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-16x16.png" sizes="16x16" />
+<meta name="application-name" content="Mapsam"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="/images/favicon/mstile-144x144.png" />
+<!-- thumbs down -->
+
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <link rel="stylesheet" href="/css/mapsam.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  
+  
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52837030-1', 'auto');
+    ga('require', 'displayfeatures');
+    ga('send', 'pageview');
+  </script>
+
+</head>
+<body>
+
+<nav class="nav cf">
+	<a href="/"><img src="/images/shrug.png"></a>
+</nav>
+
+
+<h1 class="title">Sending emails with Node.js, Gmail, and IFTTT</h1>
+<p class="date">September 01, 2017</p>
+
+<p>I recently had to set up an email confirmation system for the Atlas of Design in preparation for the next call for participation. The submissions platform is written in Node.js using Express and uses AWS for the data storage and map uploads. The last bit of the puzzle was just a simple email to send folks after they submitted their map. This proved a bit harder than anticipated.</p>
+
+<h2 id="hard-times-with-nodemailer">Hard times with Nodemailer</h2>
+
+<p>First, email isn’t easy. I don’t pretend to know much about it. The first and most popular result from searching “send email with Node.js” on Google pointed me to <a href="http://nodemailer.com/">Nodemailer</a>. At first, it worked as I expected but over time the security warnings from Gmail kept blocking my application from sending email on behalf of Gmail. I tried all of the “turn on insecure apps mode” and “disabling captcha” to no avail. I needed something much, much simpler than Nodemailer. Just some text in someone’s inbox!</p>
+
+<h2 id="third-party-webhooks">Third-party webhooks</h2>
+
+<p>Then I learned services such as Zapier and IFTTT have webhooks. These webhooks are URLs that you send POST requests to with a custom request body, and these services allow you parse that body and take further action. For example, you can trigger events with certain emails and create new entries in a Google Doc, or when you receive a text message you can create an entry in a DynamoDB table. Trigger here, do something there.</p>
+
+<h2 id="creating-the-ifttt-webhook">Creating the IFTTT webhook</h2>
+
+<p>Setting up the webhook in IFTTT (If this, then that) was fairly simple. It doesn’t allow you to get as detailed as Zapier, but they don’t enforce any limits, which was ideal. IFTTT calls their webhooks “Maker webhooks” and you can see the documentation if you go to <a href="https://ifttt.com/maker_webhooks">ifttt.com/maker_webhooks</a> and click “documentation”. This gives you a custom URL for your account with an example cURL request to test with</p>
+
+<h3 id="1-create-a-new-applet-if-this-and-name-your-event">1. Create a new applet (“if this”) and name your event</h3>
+
+<p>Search <em>webhook</em> and select it. You’ll want to use the “Receive a web request” option.</p>
+
+<p><img src="https://c1.staticflickr.com/5/4417/36135872064_1ce210152e_z.jpg" alt="" /></p>
+
+<p>I named the email confirmation event <code class="language-plaintext highlighter-rouge">aod_email_confirmation</code>. This is used in your account’s custom webhook URL by replacing the <code class="language-plaintext highlighter-rouge">{event}</code> with your name.</p>
+
+<p><img src="https://c1.staticflickr.com/5/4355/36135872084_83b38d8d66_z.jpg" alt="" /></p>
+
+<h3 id="2-choose-an-action-service-then-that">2. Choose an action service (“then that”)</h3>
+
+<p>We want to use Gmail to send our emails. Sending email with respectable servers like Gmail increases the chance of your spoofed email confirmations not being caught by spam. IFTTT requires you to give it access to your Gmail so it can send email legitimately. I’m okay with this, because handling email is hard.</p>
+
+<p><img src="https://c1.staticflickr.com/5/4424/36135871944_5c0b8652cb_z.jpg" alt="" /></p>
+
+<h3 id="3-enter-email-details">3. Enter email details</h3>
+
+<p>This is where we start working with the custom data we’ll send later in the POST request. IFTTT only grants you access to a few customer parameters so use them wisely. They are named <code class="language-plaintext highlighter-rouge">value1</code>, <code class="language-plaintext highlighter-rouge">value2</code>, and <code class="language-plaintext highlighter-rouge">value3</code>. We only had three custom data fields to send, so this worked great (<em>Note: Zapier allows you to create custom body parameters</em>). We prepared our application (later step) to use the values like so:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">value1</code>: email address</li>
+  <li><code class="language-plaintext highlighter-rouge">value2</code>: name</li>
+  <li><code class="language-plaintext highlighter-rouge">value3</code>: map title</li>
+</ul>
+
+<p>Assuming the above, you can fill in the fields with these variables. For example, the “to” email field was set to `` and our email body looks like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hi ,&lt;br&gt;
+&lt;br&gt;
+Your map "" has been submitted successfully
+to the Atlas of Design. Please send us an email if
+you have any questions.&lt;br&gt;
+&lt;br&gt;
+Warmly,&lt;br&gt;
+The Atlas of Design team
+</code></pre></div></div>
+
+<p>Save this and enable the applet. Now it’s ready to take requests at your custom URL!</p>
+
+<h3 id="4-set-up-your-service-to-send-a-post-request">4. Set up your service to send a POST request</h3>
+
+<p>Since we’re using Node.js we used request to send our posts. The URL (which you can find by clicking “documentation” on <a href="https://ifttt.com/maker_webhooks">this page</a>) will look like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://maker.ifttt.com/trigger/{event}/with/key/{your_key}
+</code></pre></div></div>
+
+<p>And you’ll want to replace <code class="language-plaintext highlighter-rouge">{event}</code> with the name you created in step 1, plus replace <code class="language-plaintext highlighter-rouge">{your_key}</code> with the one provided in the documentation page when you’re logged in.</p>
+
+<p>Here’s the script for the <code class="language-plaintext highlighter-rouge">aod_email_confirmation</code> webhook:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">webhook</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">https://maker.ifttt.com/trigger/aod_email_confirmation/with/key/{key}</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">body</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">value1</span><span class="p">:</span> <span class="nx">item</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span>
+  <span class="na">value2</span><span class="p">:</span> <span class="nx">item</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+  <span class="na">value3</span><span class="p">:</span> <span class="nx">item</span><span class="p">.</span><span class="nx">title</span>
+<span class="p">};</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="nx">webhook</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">json</span><span class="p">:</span> <span class="nx">body</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">callback</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<hr />
+
+<p>Now your service can send requests to this URL and IFTTT handles all of the email sending for you. IFTTT has many crazier triggers and events than these, I suggest checking them out!</p>
+
+
+<a class="mono" href="/posts">&lBarr; back to posts</a>
+
+
+
+</body>
+</html>
+

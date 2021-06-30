@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>mapsam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta property="og:title" content="Responsive YouTube Embeds" />
+  <meta property="og:url" content="http://mapsam.com/posts/responsive-youtube-embeds" />
+  <meta property="og:description" content="The responsive nature of the modern web is making content integration tricky - especially in the age of video. Working with Youtube videos typically involves &lt;iframe&gt; embeds, which don’t give you a ton of freedom due to Cross Origin Issues unless you use the Youtube API. The API can be a bit cumbersome for a simple, single video though.
+" />
+
+  <!-- thumbs up dude! -->
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="/images/favicon/apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/favicon/apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/favicon/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/favicon/apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="/images/favicon/apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/images/favicon/apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="/images/favicon/favicon-16x16.png" sizes="16x16" />
+<meta name="application-name" content="Mapsam"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="/images/favicon/mstile-144x144.png" />
+<!-- thumbs down -->
+
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <link rel="stylesheet" href="/css/mapsam.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  
+  
+  <link rel="stylesheet" href="/css/responsive-video.css">
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52837030-1', 'auto');
+    ga('require', 'displayfeatures');
+    ga('send', 'pageview');
+  </script>
+
+</head>
+<body>
+
+<nav class="nav cf">
+	<a href="/"><img src="/images/shrug.png"></a>
+</nav>
+
+
+<h1 class="title">Responsive YouTube Embeds</h1>
+<p class="date">July 23, 2014</p>
+
+<p>The responsive nature of the modern web is making content integration tricky - especially in the age of video. Working with Youtube videos typically involves <span>&lt;iframe&gt;</span> embeds, which don’t give you a ton of freedom due to Cross Origin Issues unless you use the Youtube API. The API can be a bit cumbersome for a simple, single video though.</p>
+
+<p>Making these videos respond to your screen size can be an issue largely because your iframe has to be malleable and responsive, but that doesn’t mean your content within the <span>&lt;iframe&gt;</span> can be responsive. So, the responsive video turns into a hack. Albiet, a very reliable and useful one!</p>
+
+<h3 id="css">CSS</h3>
+
+<pre><code class="language-CSS">.video {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  width:100%;
+}
+.video iframe {
+  position: absolute;
+  width:100%;
+  height:100%;
+}
+</code></pre>
+
+<h3 id="html">HTML</h3>
+
+<pre><code class="language-HTML">&lt;div class="video"&gt;
+&lt;iframe src="..." frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+</code></pre>
+
+<div class="video">
+<iframe src="http://www.youtube.com/embed/BPkMh7bR4PE?rel=0" frameborder="0" allowfullscreen=""></iframe>
+</div>
+
+<p>This trick is possible because of the extra padding set to the <span>.video</span> div, which is at a percentage of its size and will therefore scale if the <span>.video</span> div changes in width. The <span>&lt;iframe&gt;</span> then scales with it and subsequently, the video itself.</p>
+
+<p>This of course is relying on your video to be at the standard 16:9 screen ratio (<em>notice 9 divided by 16 is .5625</em>) - hence <strong>56.25%</strong> in the padding. Other videos will need other padding percentages to fit their ratio.</p>
+
+
+<a class="mono" href="/posts">&lBarr; back to posts</a>
+
+
+
+</body>
+</html>
+
