@@ -1,0 +1,53 @@
+I"<p>I came across the JavaScript <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign">Object.assign()</a> method recently, which is used to copy properties from one or more objects into a new or target object. Here’s how it’s used:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">objectA</span> <span class="o">=</span> <span class="p">{</span><span class="na">one</span><span class="p">:</span> <span class="mi">1</span><span class="p">};</span>
+<span class="kd">var</span> <span class="nx">objectB</span> <span class="o">=</span> <span class="p">{</span><span class="na">two</span><span class="p">:</span> <span class="mi">2</span><span class="p">};</span>
+<span class="kd">var</span> <span class="nx">objectC</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span> <span class="nx">objectA</span><span class="p">,</span> <span class="nx">objectB</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">objectC</span><span class="p">);</span> <span class="c1">// {one: 1, two: 2};</span>
+</code></pre></div></div>
+
+<p>The Object.assign() method can take any number of objects, but the first is the returned value. Above I merge everything into a new, empty object, instead of <code class="language-plaintext highlighter-rouge">objectA</code> or <code class="language-plaintext highlighter-rouge">objectB</code> to avoid mutating them. The right most object gets priority, merging itself into the object to the left, and so on.</p>
+
+<p>Pretty neat! On the surface, this feels pretty useful. It can come in handy when assigning objects or other default properties. Here’s an example of that:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">defaults</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">color</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffffff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">private</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">custom</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">color</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#000000</span><span class="dl">'</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span> <span class="nx">defaults</span><span class="p">,</span> <span class="nx">custom</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span> <span class="c1">// {color: '#000000', private: true}</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">color</code> value in the <code class="language-plaintext highlighter-rouge">default</code> object is overridden by the matching value in the <code class="language-plaintext highlighter-rouge">custom</code> object. All is good if you are using basic values in your objects.</p>
+
+<p><strong>Watch out for nested objects!</strong> One GOTCHA when using Object.assign() is to avoid making assumptions with nested objects and their values. Here’s a nested object carrying over as expected:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">defaults</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">color</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffffff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">position</span><span class="p">:</span> <span class="p">{</span> <span class="na">left</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">0</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">custom</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">color</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#000000</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">position</span><span class="p">:</span> <span class="p">{</span> <span class="na">left</span><span class="p">:</span> <span class="mi">10</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span> <span class="nx">defaults</span><span class="p">,</span> <span class="nx">custom</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span> <span class="c1">// {color: '#000000', position: {left: 10}}</span>
+</code></pre></div></div>
+
+<p>See how the <code class="language-plaintext highlighter-rouge">position</code> value <em>only</em> includes the <code class="language-plaintext highlighter-rouge">left</code> parameter? The method takes the <strong>whole</strong> value and overrides the original. Therefore it sees the parameter <code class="language-plaintext highlighter-rouge">position</code> is present, and replaces the default value with the new value, which happens to be an object with <em>only</em> the <code class="language-plaintext highlighter-rouge">left</code> parameter, but not <code class="language-plaintext highlighter-rouge">top</code> value.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">top</span><span class="p">);</span> <span class="c1">// undefined</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">top</code> parameter is completely gone. No good! This is intended behavior, but if using Object.assign() willy nilly can leave you in a world of hurt. I recommend looking at <a href="https://github.com/sindresorhus/deep-assign">deep-assign</a>, a small node library that extends the method to deeply assign values. With the same values as above, here’s the final output:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span> <span class="c1">// {color: '#000000', position: {left: 10, top: 0}}</span>
+</code></pre></div></div>
+:ET

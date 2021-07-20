@@ -1,0 +1,2 @@
+I"ú<p>Often times I find myself with spatial data in non-spatial formats. Equally as often, those data cannot be permanently changed into a spatial format since they are being continually updated in their original format by someone else. Rendering spatial data requires GeoJSON. GeoJSON is derived from JSON (JavaScript Object Notation) and adds a spatial key/value pair into the mix. The data type has a required format, which can be found at <a href="http://geojson.org">geojson.org</a> and seen below:</p>
+:ET

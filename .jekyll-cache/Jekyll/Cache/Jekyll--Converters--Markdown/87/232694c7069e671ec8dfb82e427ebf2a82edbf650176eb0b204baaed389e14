@@ -1,0 +1,44 @@
+I"�<p>Last week I attended my first <a href="http://stateofthemap.us/">State of the Map US</a> (SOTM), an annual conference for those within or interested in <a href="http://www.openstreetmap.org/">OpenStreetMap</a> (OSM). The conference was held in New York City at the UN headquarters, which was a most excellent venue. Not having been to an OSM-specific conference before, I was interested to see how it stacked up to the other, more general mapping conferences such as FOSS4G. I expected something smaller and more focused, relating purely to OSM and it’s triumphs and failures thus far.</p>
+
+<p><img src="/images/posts/20150613-sotm_courthouse.jpg" alt="opening party at the courthouse" /></p>
+
+<p>OSM is, conceptually, a very simple thing: a digital representation of our planet that allows any user to add or edit spatial information. At least, that’s how I understood it before SOTM. Now, as I reflect on two days of speakers and events, I’m finding myself in the middle of a community that is on the verge of opening up the doors to something much larger than our visual planet. OSM is a platform, a database, a means of sharing culture, and has the power to completely redefine our understanding of spatial information.</p>
+
+<h3 id="community-defines-context">Community defines context</h3>
+
+<p>One of the more interesting series of talks was a look into how the <a href="http://missingmaps.org">Missing Maps project</a>, the Peace Corps, and the UN are using OSM more and more. The Missing Maps project aims to <em>“map the most vulnerable places in the developing world, in order that international and local NGOs and individuals can use the maps and data to better respond to crises affecting the areas.”</em> Their approach is very community-centric; learning from community members about <strong>what</strong> to map, which not only gives insight into the surrounding area but what information is actually important to these communities. <a href="https://twitter.com/bricker">Britta Ricker</a> from the University of Washington–Tacoma put it elegantly, “If we don’t recognize the entirety of the mapping world, the map becomes just a reflection of ourselves.”</p>
+
+<p>The Peace Corps is starting to train <a href="https://github.com/PeaceCorps/OSM-Dashboard">program participants</a> in OSM so they can map out their communities. This was a cool story:</p>
+
+<blockquote>
+  <p>A volunteer learned about OSM and went to her host city in Botswanna. There she crowdsourced the entire city data and added it to OSM. The host community added local knowledge and a health clinic conducted a geocoded survey after an indoor residual spraying campaign to reduce malaria. They created a map that shows which houses were sprayed to kill mosquitoes, and which were not. Because of OSM, making spatial decisions was possible.</p>
+</blockquote>
+
+<p>These efforts make OSM shine, and are beginning to transform the data into a much more globally holistic state. This doesn’t mean there aren’t upcoming challenges coming up for OSM, though.</p>
+
+<h3 id="bureaucracy-will-require-some-strong-hands">Bureaucracy will require some strong hands</h3>
+
+<p>As OSM becomes more useable, it is starting to catch the eye of many different departments in government. The bureaucratic obstacle course in government makes cross-collaboration difficult. <a href="https://twitter.com/mikel">Mikel Maron</a>, a Presidential Innovation Fellow, spoke to the very real silos that affect the interaction between departments. One of his takeaways that hit me most was, <em>“go where you aren’t supposed to be”</em> and <em>“pretend it [projects using OSM] already works that way”</em>. Breaking down those silos is going to require some extra work. If you assume the above you’re on your way to more government recognition and usage, which would be a huge win for OSM.</p>
+
+<h3 id="the-international-community-is-still-skeptical">The international community is still skeptical</h3>
+
+<blockquote>
+  <p>“Maps are not the end goal. Maps enable decisions.”</p>
+</blockquote>
+
+<p>Another big update came from the <a href="http://hotosm.org/">Humanitarian OSM Team</a> (HOT). The recent earthquake in Nepal brought on a surge of new mappers, as well as a quite a few criticisms towards the data quality. John Crowley discussed a proposal to turn HOT into a more institutionalized entity. This would give the team the ability to more effectively check for quality data if they were able to receive funds and grants. A more powerful, reliable map will make OSM even strong. He advocated for more ground truth mappers and reassured the listeners that <em>“Maps are not the end goal. Maps enable decisions.”</em> This institutionalization doesn’t come without pushback, though. Earning full trust from the international community will take time.</p>
+
+<h3 id="peripheral-data-are-currently-unable-to-fully-interact-with-osm">Peripheral data are currently unable to fully interact with OSM</h3>
+
+<p>OSM is a growing, ever diversifying community. Companies are starting to stretch the limits of what OSM was original built for, such as those intending to add peripheral data to the database. Efforts such as <a href="http://openaddresses.io/">openaddresses.io</a>, <a href="http://www.mapillary.com/">Mapillary</a>, <a href="http://www.trailheadlabs.com/">Trailhead Labs</a>, and <a href="https://transit.land/">transit.land</a> are all relying on OSM for their work, but OSM is currently not built to ingest their information. Getting information such as transit times and street view into the OSM planet would be a significant boost to the ability for companies to built on top of OSM.</p>
+
+<p><img src="/images/posts/20150613-droids.gif" alt="these aren't the droids you're looking for" /></p>
+
+<p>In general, OSM is becoming the glue to many different organizations and companies. It’s not the map we once knew. As the community becomes more diverse and begins to focus on the local context and need of data, OSM will grow as a platform and a tool. These aren’t the maps you’re looking for. Really, OSM isn’t a map at all. It’s a group of dedicated individuals and volunteers from around the world who are liberating their sense of place and allowing the world to be a part of it.</p>
+
+<p>Onward mappers!</p>
+
+<hr />
+
+<p><em>You can read my notes from the conference <a href="https://github.com/mapsam/mapsam.github.io/wiki/Notes:-State-of-the-Map-2015,-NYC-(Day-1)">day 1</a> and <a href="https://github.com/mapsam/mapsam.github.io/wiki/Notes:-State-of-the-Map-2015,-NYC-(Day-2)">day 2</a> on the wiki of this site.</em></p>
+:ET

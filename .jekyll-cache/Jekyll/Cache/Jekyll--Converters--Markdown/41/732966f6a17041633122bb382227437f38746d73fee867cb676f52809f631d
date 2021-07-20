@@ -1,0 +1,34 @@
+I"�<p>In need of geocoding a number of addresses in a CSV file for some mapping work, I created a module <code class="language-plaintext highlighter-rouge">mbgeocode</code> that ingests a CSV and outputs a GeoJSON file of all successfull addresses geocoded. This project relies on the <a href="https://www.mapbox.com/developers/api/geocoding/">Mapbox geocoding API</a>, which allows for requests sent via <code class="language-plaintext highlighter-rouge">HTTPS</code> and returns geocoded information in the form of a <a href="https://github.com/mapbox/carmen/blob/master/carmen-geojson.md">Carmen GeoJSON</a>.</p>
+
+<p>This is a Node.js module, so you’ll have to have Node installed on your computer. You can install <code class="language-plaintext highlighter-rouge">mbgeocode</code> via the <a href="https://www.npmjs.com/package/mbgeocode">npm registry</a>, which gives you global access to using the <code class="language-plaintext highlighter-rouge">mbgeocode</code> on your machine.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install</span> <span class="nt">-g</span> mbgeocode
+</code></pre></div></div>
+
+<h3 id="usage">Usage</h3>
+
+<p>Geocoding requires two inputs:</p>
+
+<ol>
+  <li>CSV file with appropriately named colums</li>
+  <li>A Mapbox API <a href="https://www.mapbox.com/help/define-access-token/">token</a></li>
+</ol>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mbgeocode file.csv &lt;mapbox_token&gt;
+</code></pre></div></div>
+
+<p>Here’s an example of it in action.</p>
+
+<p><img src="/images/posts/20151220-mbgeocode.gif" alt="terminal example" /></p>
+
+<p>There are a number of features that I’d like to add over time, including:</p>
+
+<ul>
+  <li>More flexible column name intakes, so users don’t have to format CSVs perfectly.</li>
+  <li>Similarly, allow a user to specify which column is the address if address information isn’t spread across columns</li>
+  <li>Test with browserify and use in the browser</li>
+  <li>Test running across the Mapbox “batch” geocoder to test for speed differences</li>
+</ul>
+
+<p>You can find the project on <a href="https://github.com/mapsam/mbgeocode">Github</a>.</p>
+:ET

@@ -1,0 +1,2 @@
+I"�<p>When using in-page anchor links, you typically create the <span>a</span> tag with the <span>id</span> hash of the element you want to scroll to - <span>&lt;a href=”#your-element”&gt;</span>. The default functionality is to jump the page to that anchor point instantly, without any animation. This can be somewhat confusing for a user, especially if you want your site to be notably vertical and in a specific order.</p>
+:ET

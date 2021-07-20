@@ -1,0 +1,33 @@
+I"<p>When using in-page anchor links, you typically create the <span>a</span> tag with the <span>id</span> hash of the element you want to scroll to - <span>&lt;a href=”#your-element”&gt;</span>. The default functionality is to jump the page to that anchor point instantly, without any animation. This can be somewhat confusing for a user, especially if you want your site to be notably vertical and in a specific order.</p>
+
+<p>In order to ensure the page scrolls to that point, you must set a condition when clicking links on your page. Essentially, when you click any <span>&lt;a&gt;</span> tag, you will run a check on the <span>href</span> attribute for any existence of the <span>#</span> hash. If this condition satisfies as true, you can collect the height and offset information of that element from the current position of the page, and animate your scroll to that specific extent.</p>
+
+<p><strong>Example</strong> <a href="#bottom">Click me</a> to get past all of these dumb images that Sam has on twitter.</p>
+
+<p><img src="https://pbs.twimg.com/media/B0CQfCkCYAAKJy-.jpg:large" alt="twitter 1" />
+<img src="https://pbs.twimg.com/media/BzXOLfFCIAAGYba.jpg:large" alt="twitter 2" />
+<img src="https://pbs.twimg.com/media/ByVPqJzCYAAlwDQ.png:large" alt="twitter 3" /></p>
+
+<h2 id="bottom">You scrolled down!</h2>
+
+<p>This is a great UI technique, and so simple to execute on your page. Here’s the code snippet:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">$</span><span class="p">(</span><span class="dl">'</span><span class="s1">a</span><span class="dl">'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="dl">'</span><span class="s1">href</span><span class="dl">'</span><span class="p">).</span><span class="nx">indexOf</span><span class="p">(</span><span class="dl">'</span><span class="s1">#</span><span class="dl">'</span><span class="p">)</span><span class="o">&gt;-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="dl">"</span><span class="s2">href</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">top</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">id</span><span class="p">).</span><span class="nx">offset</span><span class="p">().</span><span class="nx">top</span><span class="p">;</span>
+    <span class="nx">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">html, body</span><span class="dl">"</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span>
+      <span class="na">scrollTop</span><span class="p">:</span> <span class="nx">top</span>
+    <span class="p">},</span> <span class="mi">500</span><span class="p">);</span> <span class="c1">// you can set any time here</span>
+  <span class="p">}</span>
+<span class="p">});</span></code></pre></figure>
+
+<p>Remember, you can manipulate that snippet to effectively do whatever you like when you click a page hash. I tend to offset the page scroll by <span>20px</span> or so to make sure the element I scroll to has a bit of padding above.</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ...</span>
+<span class="nx">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">html, body</span><span class="dl">"</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span>
+  <span class="na">scrollTop</span><span class="p">:</span> <span class="nx">top</span><span class="o">-</span><span class="mi">20</span> <span class="c1">// 20 pixel offset</span>
+<span class="p">},</span> <span class="mi">500</span><span class="p">);</span>
+<span class="c1">// ...</span></code></pre></figure>
+:ET

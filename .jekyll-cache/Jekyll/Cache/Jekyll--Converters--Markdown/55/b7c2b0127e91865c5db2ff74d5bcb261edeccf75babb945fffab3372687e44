@@ -1,0 +1,2 @@
+I"V<p>Last month (December 2016) the Google Feed API was discontinued. The CUGOS website (cugos.org) used the Google Feed API to list out the recent posts in our <a href="https://groups.google.com/forum/#!aboutgroup/cugos">Google Group</a>, which has a less-than-stellar user interface. The JavaScript console on cugos.org looked like this:</p>
+:ET

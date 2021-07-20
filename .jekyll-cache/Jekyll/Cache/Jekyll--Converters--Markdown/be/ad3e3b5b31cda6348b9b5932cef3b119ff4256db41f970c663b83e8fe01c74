@@ -1,0 +1,2 @@
+I"…<p>I recently had to set up an email confirmation system for the Atlas of Design in preparation for the next call for participation. The submissions platform is written in Node.js using Express and uses AWS for the data storage and map uploads. The last bit of the puzzle was just a simple email to send folks after they submitted their map. This proved a bit harder than anticipated.</p>
+:ET

@@ -1,0 +1,2 @@
+I"o<p>The responsive nature of the modern web is making content integration tricky - especially in the age of video. Working with Youtube videos typically involves <span>&lt;iframe&gt;</span> embeds, which don’t give you a ton of freedom due to Cross Origin Issues unless you use the Youtube API. The API can be a bit cumbersome for a simple, single video though.</p>
+:ET

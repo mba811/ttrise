@@ -1,0 +1,11 @@
+I"`<style>
+aside {
+  text-align: left;
+}
+aside img {
+  width: 100px;
+  margin: 0;
+}
+</style>
+
+:ET

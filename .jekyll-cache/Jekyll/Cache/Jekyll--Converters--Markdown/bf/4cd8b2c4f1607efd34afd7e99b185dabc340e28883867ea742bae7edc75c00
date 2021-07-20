@@ -1,0 +1,2 @@
+I"¿<p>Working with multi-sites can be tricky, especially when you have specific scripts running that require specific information based on the differing site domains. I typically run into this issue when I need to grab, for instance, an instagram feed for a specific restaurant, but another feed for another restaurant and both are using the same javascript file. The following script can be used for any number of reasons, but my favorites are:</p>
+:ET

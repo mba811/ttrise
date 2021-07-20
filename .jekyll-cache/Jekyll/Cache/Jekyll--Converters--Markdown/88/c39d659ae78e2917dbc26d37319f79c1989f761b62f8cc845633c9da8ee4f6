@@ -1,0 +1,52 @@
+I"�<p>Much of my recent work at Mapbox has been around developing and testing node modules lay the groundwork of our vector tile pipeline. All of our node modules that we use across tools, such as <a href="https://www.npmjs.com/package/tilelive"><code class="language-plaintext highlighter-rouge">tilelive</code></a>, are published to NPM, which means we release semantically versioned updates.</p>
+
+<p>When developing NPM hosted packages, it can become a pain to constantly push updates to NPM especially since this can have effects on others using your modules. We want to be able to test changes of node modules across our team and pipeline without relying on NPM’s publishing service.</p>
+
+<p>A quick way around this is to use GitHub as a means of testing development versions, without publishing to NPM.</p>
+
+<p>Say we have two repositories, <strong><code class="language-plaintext highlighter-rouge">lemon</code></strong> and <strong><code class="language-plaintext highlighter-rouge">fruit-basket</code></strong>. The <code class="language-plaintext highlighter-rouge">fruit-basket</code> module relies on <code class="language-plaintext highlighter-rouge">lemon</code> as a dependency in it’s <code class="language-plaintext highlighter-rouge">package.json</code> file:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "name": "fruit-basket",
+  "description": "A basket of fruits",
+  "version" : "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mapsam/fruit-basket.git"
+  },
+  "dependencies": {
+    "lemon": "1.0.0"
+  }
+}
+</code></pre></div></div>
+
+<p>If we were developing <code class="language-plaintext highlighter-rouge">lemon@2.0.0</code> and wanted to make sure <code class="language-plaintext highlighter-rouge">fruit-basket</code> still worked, you could publish dev versions to NPM like <code class="language-plaintext highlighter-rouge">lemon@2.0.0-dev</code> if you wanted, but that’s an unecessary step.</p>
+
+<p>Since <code class="language-plaintext highlighter-rouge">lemon</code> is a GitHub repository, we can actually point the dependency version at a GitHub branch! Assuming <code class="language-plaintext highlighter-rouge">lemon@2.0.0</code> is being developed on the <code class="language-plaintext highlighter-rouge">big-update</code> branch, we can update our <code class="language-plaintext highlighter-rouge">package.json</code> to the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "dependencies": {
+    "lemon": "https://github.com/mapsam/lemon/tarball/big-update"
+  }
+}
+</code></pre></div></div>
+
+<p>Pretty neat! Now if you remove your <code class="language-plaintext highlighter-rouge">node_modules</code> directory in <code class="language-plaintext highlighter-rouge">fruit-basket</code> and re-install all of your dependencies, you’ll notice the version of <code class="language-plaintext highlighter-rouge">lemon</code> you are pointing at is <code class="language-plaintext highlighter-rouge">2.0.0</code>. You can check what version of a dependency you are using by running <code class="language-plaintext highlighter-rouge">npm ls lemon</code>.</p>
+
+<h3 id="bonus-points">Bonus points</h3>
+
+<p>You can point your dependencies at <a href="https://docs.npmjs.com/files/package.json#github-urls">more than GitHub branches</a>! You can point to <em>gitsha</em>’s and <em>releases</em> as well. As of NPM <code class="language-plaintext highlighter-rouge">1.1.65</code> you don’t even need the github prefix.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "dependencies": {
+    "lemon": "git://github.com/mapsam/lemon.git#gitsha",
+    "lemon": "git://github.com/mapsam/lemon.git#release",
+    "lemon": "mapsam/lemon",
+    "lemon": "mapsam/lemon#gitsha",
+    "lemon": "mapsam/lemon#release"
+  }
+}
+</code></pre></div></div>
+
+<p>Save your publishing to NPM for real releases!</p>
+:ET

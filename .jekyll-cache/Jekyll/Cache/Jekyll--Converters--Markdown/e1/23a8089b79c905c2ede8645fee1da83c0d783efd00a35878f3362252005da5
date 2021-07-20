@@ -1,0 +1,40 @@
+I"v<p>Working with multi-sites can be tricky, especially when you have specific scripts running that require specific information based on the differing site domains. I typically run into this issue when I need to grab, for instance, an instagram feed for a specific restaurant, but another feed for another restaurant and both are using the same javascript file. The following script can be used for any number of reasons, but my favorites are:</p>
+
+<ul>
+  <li>building a static URL for Ajax calls, which tends to work more systematically instead of looking for data with relative paths</li>
+  <li>running page-specific javascript by checking the URL first, then running functions</li>
+  <li>safeguarding data scripts (i.e. Google Analytics) from running on dev servers, which prevents the need to remove the script</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">pathArray</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span> <span class="dl">'</span><span class="s1">/</span><span class="dl">'</span> <span class="p">);</span>
+<span class="nx">protocol</span> <span class="o">=</span> <span class="nx">pathArray</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="nx">host</span> <span class="o">=</span> <span class="nx">pathArray</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="nx">url</span> <span class="o">=</span> <span class="nx">protocol</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">//</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">host</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="bonus-script">Bonus Script</h2>
+
+<p>There are a ton of ways to get the URL, especially if you are working with more than just JavaScript. In <strong>WordPress</strong>, you can get any number of directory paths or URIs, but you can also push information from your PHP into your javascript functions if you define them in your <span>functions.php</span> file in the <span>enqueue_script</span> process.</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nf">wp_register_script</span><span class="p">(</span> <span class="s1">'js_file'</span><span class="p">,</span> <span class="s1">'path/to/site.js'</span> <span class="p">);</span>
+<span class="c1">// get base URL</span>
+<span class="nv">$base_url</span> <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'SERVER_NAME'</span><span class="p">];</span>
+<span class="c1">// get request URI for finding the full path for sub pages</span>
+<span class="nv">$request_uri</span> <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'REQUEST_URI'</span><span class="p">];</span>
+<span class="c1">// build an array of data to pass to your javascript file</span>
+<span class="nv">$site_data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span> <span class="s1">'base_url'</span> <span class="o">=&gt;</span> <span class="nv">$base_url</span><span class="p">,</span> <span class="s1">'$request_uri'</span> <span class="o">=&gt;</span> <span class="nv">$request_uri</span> <span class="p">);</span>
+<span class="c1">// localize_script sends PHP found data as an object array usable in your javascript</span>
+<span class="nf">wp_localize_script</span><span class="p">(</span> <span class="s1">'js_file'</span><span class="p">,</span> <span class="s1">'siteInfo'</span><span class="p">,</span> <span class="nv">$site_data</span> <span class="p">);</span>
+<span class="c1">// queue your script file for useage</span>
+<span class="nf">wp_enqueue_script</span><span class="p">(</span> <span class="s1">'js_file'</span> <span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<p>Then in your javascript file you can access the data via the name of your object; in this example the object is named <span>siteInfo</span>.</p>
+
+<pre><code class="language-javsacript">alert(siteInfo.base_url); // alerts www.example.com
+</code></pre>
+
+<p>~Boo~ Yay URLs!</p>
+:ET
